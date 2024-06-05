@@ -29,7 +29,7 @@ func GetAllConnectionFromHomeDir() ([]Connection, error) {
 	usernameToConnection := make(map[string]Connection)
 	aliases := make(map[string]string)
 	for _, entry := range entries {
-		if entry.Name() == "key.json" {
+		if entry.Name() == "key.json" || entry.Name() == "stash.json" {
 			// we are ignoring this as no one knows what this is
 		} else if entry.Name() == "alias.json" {
 			fileContent, fsError := os.ReadFile(path.Join(folderWithAuth, entry.Name()))
@@ -42,7 +42,7 @@ func GetAllConnectionFromHomeDir() ([]Connection, error) {
 				continue
 			}
 			for orgAlias, username := range aliasesStore.Orgs {
-				aliases[orgAlias] = username
+				aliases[username] = orgAlias
 			}
 		} else {
 			var con Connection
@@ -60,6 +60,10 @@ func GetAllConnectionFromHomeDir() ([]Connection, error) {
 	}
 	connections := make([]Connection, 0, len(usernameToConnection))
 	for _, connection := range usernameToConnection {
+		alias, hasAlias := aliases[connection.Username]
+		if hasAlias {
+			connection.Alias = alias
+		}
 		connections = append(connections, connection)
 	}
 	return connections, nil
