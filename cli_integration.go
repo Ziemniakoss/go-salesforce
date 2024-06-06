@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/user"
 	"path"
+	"strings"
 )
 
 /*
@@ -29,7 +30,7 @@ func GetAllConnectionFromHomeDir() ([]Connection, error) {
 	usernameToConnection := make(map[string]Connection)
 	aliases := make(map[string]string)
 	for _, entry := range entries {
-		if entry.Name() == "key.json" || entry.Name() == "stash.json" {
+		if entry.Name() == "key.json" || entry.Name() == "stash.json" || strings.HasSuffix(entry.Name(), ".sandbox.json") {
 			// we are ignoring this as no one knows what this is
 		} else if entry.Name() == "alias.json" {
 			fileContent, fsError := os.ReadFile(path.Join(folderWithAuth, entry.Name()))
