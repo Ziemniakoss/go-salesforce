@@ -105,7 +105,7 @@ func (f FileSystemSfConnectionsManager) GetDefaultUsername(filePath string) (str
 		currentDir = path.Dir(currentDir)
 	}
 
-	for currentDir != "/" {
+	for {
 		if sfUsername, _ := f.readUsernameFromSfConfig(currentDir); sfUsername != "" {
 			return sfUsername, nil
 		}
@@ -113,9 +113,12 @@ func (f FileSystemSfConnectionsManager) GetDefaultUsername(filePath string) (str
 			return sfdxUsername, nil
 		}
 
-		currentDir = path.Dir(currentDir)
+		nextDir := path.Dir(currentDir)
+		if nextDir == currentDir {
+			return "", errors.New("NO_DEFAULT_ORG")
+		}
+		currentDir = nextDir
 	}
-	return "", errors.New("NO_DEFAULT_ORG")
 }
 
 func (f FileSystemSfConnectionsManager) readUsernameFromSfConfig(directory string) (string, error) {
