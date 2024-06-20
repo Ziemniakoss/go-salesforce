@@ -95,30 +95,18 @@ func (f FileSystemSfConnectionsManager) GetDefaultConnection(filePath string) (C
 
 // GetDefaultUsername implements SfConnectionsManager.
 func (f FileSystemSfConnectionsManager) GetDefaultUsername(filePath string) (string, error) {
-	currentPath, error := os.Stat(filePath)
-	if error != nil {
-		return "", errors.New("FILE_DOES_NOT_EXIST")
+	sfProject, err := GetSfProject(filePath)
+	if err != nil {
+		return "", err
 	}
 
-	currentDir := filePath
-	if !currentPath.IsDir() {
-		currentDir = path.Dir(currentDir)
+	if sfUsername, _ := f.readUsernameFromSfConfig(sfProject.RootFolder); sfUsername != "" {
+		return sfUsername, nil
 	}
-
-	for {
-		if sfUsername, _ := f.readUsernameFromSfConfig(currentDir); sfUsername != "" {
-			return sfUsername, nil
-		}
-		if sfdxUsername, _ := f.readUsernameFromSfdxConfig(currentDir); sfdxUsername != "" {
-			return sfdxUsername, nil
-		}
-
-		nextDir := path.Dir(currentDir)
-		if nextDir == currentDir {
-			return "", errors.New("NO_DEFAULT_ORG")
-		}
-		currentDir = nextDir
+	if sfdxUsername, _ := f.readUsernameFromSfdxConfig(sfProject.RootFolder); sfdxUsername != "" {
+		return sfdxUsername, nil
 	}
+	return "", errors.New("NO_DEFAULT_ORG")
 }
 
 func (f FileSystemSfConnectionsManager) readUsernameFromSfConfig(directory string) (string, error) {

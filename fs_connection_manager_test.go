@@ -18,6 +18,9 @@ func createTestProject(t *testing.T) string {
 		t.Error("Could not create sfdx folder", err.Error())
 		t.FailNow()
 	}
+	sfdxProjectConfigPath := path.Join(projectDir, "sfdx-project.json")
+	os.WriteFile(sfdxProjectConfigPath, []byte("{}"), 0777)
+
 	return projectDir
 }
 
