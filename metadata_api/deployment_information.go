@@ -1,41 +1,19 @@
-package gosalesforce
+package metadata_api
 
-// TODO test for this
 import (
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
+	gosalesforce "github.com/ziemniakoss/go-salesforce"
 )
 
-func GetDeploymentInfo(connection Connection, deploymentId string) (DeploymentInfo, error) {
-	url := connection.InstanceUrl + "/services/data/v60.0/metadata/deployRequest/" + deploymentId + "?includeDetails=true"
-	request, error := http.NewRequest("GET", url, nil)
-	if error != nil {
-		return DeploymentInfo{}, nil
-	}
-	request.Header = http.Header{
-		"Content-Type":  {"application/json"},
-		"Authorization": {"Bearer " + connection.AccessToken},
-	}
-	client := http.Client{}
-	response, httpError := client.Do(request)
-	if httpError != nil {
-		return DeploymentInfo{}, httpError
-	}
-	defer response.Body.Close()
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		return DeploymentInfo{}, err
-	}
-	var deploymentInfo DeploymentInfo
-	fmt.Println(string(body))
-	parsingError := json.Unmarshal(body, &deploymentInfo)
-	if parsingError != nil {
-		return DeploymentInfo{}, parsingError
-	}
-	return deploymentInfo, nil
+type DeploymentInfoProvider interface {
+	/*
+		Fetch information about specific deployment
 
+		## Arguments
+
+		- connection: defines which org should be used
+		- deploymentId: Id of deployment
+	*/
+	GetDeploymentInfo(connection gosalesforce.Connection, deploymentId string) (DeploymentInfo, error)
 }
 
 type DeploymentInfo struct {
