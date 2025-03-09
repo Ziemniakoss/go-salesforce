@@ -11,6 +11,7 @@ type SfProject struct {
 	RootFolder  string                      `json:"root"`
 	Name        string                      `json:"name"`
 	Directories []SfProjectPackageDirectory `json:"packageDirectories"`
+	ApiVersion  string                      `json:"sourceApiVersion"`
 }
 
 type SfProjectPackageDirectory struct {
