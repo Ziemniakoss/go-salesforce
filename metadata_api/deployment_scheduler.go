@@ -1,6 +1,6 @@
 package metadata_api
 
-import gosalesforce "github.com/ziemniakoss/go-salesforce"
+import gosalesforce "github.com/Ziemniakoss/go-salesforce"
 
 type DeploymentScheduler interface {
 	DeployFiles(

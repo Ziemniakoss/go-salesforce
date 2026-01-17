@@ -3,7 +3,7 @@ package gosalesforce_test
 import (
 	"testing"
 
-	gosalesforce "github.com/ziemniakoss/go-salesforce"
+	gosalesforce "github.com/Ziemniakoss/go-salesforce"
 )
 
 func TestGetAllConnectionFromHomeDir(t *testing.T) {

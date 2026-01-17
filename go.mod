@@ -1,3 +1,3 @@
-module github.com/ziemniakoss/go-salesforce
+module github.com/Ziemniakoss/go-salesforce
 
 go 1.21.9

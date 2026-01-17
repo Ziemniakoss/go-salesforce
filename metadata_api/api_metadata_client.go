@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	gosalesforce "github.com/ziemniakoss/go-salesforce"
+	gosalesforce "github.com/Ziemniakoss/go-salesforce"
 )
 
 /*

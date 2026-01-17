@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"testing"
 
-	gosalesforce "github.com/ziemniakoss/go-salesforce"
+	gosalesforce "github.com/Ziemniakoss/go-salesforce"
 )
 
 // Creates random sfdx project and returns path to it

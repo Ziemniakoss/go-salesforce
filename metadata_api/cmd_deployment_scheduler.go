@@ -6,7 +6,7 @@ import (
 	"errors"
 	"os/exec"
 
-	gosalesforce "github.com/ziemniakoss/go-salesforce"
+	gosalesforce "github.com/Ziemniakoss/go-salesforce"
 )
 
 func (client CmdMetadataClient) DeployFiles(
