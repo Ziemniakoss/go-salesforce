@@ -29,12 +29,17 @@ func (con SfConnectionLight) GetConnectionWithAccessToken() (SfConnectionWithTok
 	}
 
 	return SfConnectionWithToken{
-		InstanceURL: con.InstanceURL,
-		APIVersion:  con.APIVersion,
-		HTTPClient:  http.DefaultClient,
-		Username:    con.Username,
-		Alias:       con.Alias,
-		Token:       parsed.Result.AccessToken,
+		InstanceURL:  con.InstanceURL,
+		APIVersion:   con.APIVersion,
+		HTTPClient:   http.DefaultClient,
+		Username:     con.Username,
+		Alias:        con.Alias,
+		Token:        parsed.Result.AccessToken,
+		IsDevOrg:     con.IsDevOrg,
+		IsSandbox:    con.IsSandbox,
+		IsScratchOrg: con.IsScratchOrg,
+		InstanceName: con.InstanceName,
+		OrgEdition:   con.OrgEdition,
 	}, nil
 }
 
