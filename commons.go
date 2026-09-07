@@ -4,28 +4,28 @@ import "net/http"
 
 const DefaultAPIVersion = "67.0"
 
+type sfCommandResult[T any] struct {
+	Status int `json:"status"`
+	Result T
+}
 type SfError struct {
 	Message   string `json:"message"`
 	ErrorCode string `json:"errorCode"`
 }
 
-type SfConnection struct {
-	InstanceURL string
-	AccessToken string
-	APIVersion  string
-	HTTPClient  *http.Client
+type SfConnectionLight struct {
+	InstanceURL string `json:"instanceUrl,omitempty"`
+	APIVersion  string `json:"apiVersion,omitempty"`
+	Username    string `json:"username,omitempty"`
+	Alias       string `json:"alias,omitempty"`
 }
 
-/*
-Connection to Salesforce org, legacy
-*/
-type Connection struct {
-	AccessToken  string `json:"accessToken"`
-	InstanceUrl  string `json:"instanceUrl"`
-	Alias        string `json:"alias"`
-	Username     string `json:"username"`
-	RefreshToken string `json:"refreshToken"`
-	IsDevHub     bool   `json:"isDevHub"`
-	OrgId        string `json:"orgId"`
-	ApiVersion   string `json:"instanceApiVersion"`
+// Authorized connection
+type SfConnectionWithToken struct {
+	InstanceURL string `json:"instanceUrl,omitempty"`
+	APIVersion  string `json:"apiVersion,omitempty"`
+	HTTPClient  *http.Client
+	Username    string `json:"username,omitempty"`
+	Alias       string `json:"alias,omitempty"`
+	Token       string `json:"token,omitempty"`
 }

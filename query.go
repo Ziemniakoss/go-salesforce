@@ -17,21 +17,21 @@ type QueryResult struct {
 	Records        []json.RawMessage `json:"records"`
 }
 
-func (c *SfConnection) httpClient() *http.Client {
+func (c *SfConnectionWithToken) httpClient() *http.Client {
 	if c.HTTPClient != nil {
 		return c.HTTPClient
 	}
 	return http.DefaultClient
 }
 
-func (c *SfConnection) version() string {
+func (c *SfConnectionWithToken) version() string {
 	if c.APIVersion != "" {
 		return c.APIVersion
 	}
 	return DefaultAPIVersion
 }
 
-func (c *SfConnection) Query(ctx context.Context, soql string, tooling bool) (*QueryResult, error) {
+func (c *SfConnectionWithToken) Query(ctx context.Context, soql string, tooling bool) (*QueryResult, error) {
 	endpoint := fmt.Sprintf("/services/data/v%s/query", c.version())
 	if tooling {
 		endpoint = fmt.Sprintf("/services/data/v%s/tooling/query", c.version())
@@ -41,7 +41,7 @@ func (c *SfConnection) Query(ctx context.Context, soql string, tooling bool) (*Q
 	return c.doQueryRequest(ctx, u)
 }
 
-func (c *SfConnection) QueryMore(ctx context.Context, nextRecordsURL string) (*QueryResult, error) {
+func (c *SfConnectionWithToken) QueryMore(ctx context.Context, nextRecordsURL string) (*QueryResult, error) {
 	u := c.InstanceURL + nextRecordsURL
 	return c.doQueryRequest(ctx, u)
 }
@@ -49,7 +49,7 @@ func (c *SfConnection) QueryMore(ctx context.Context, nextRecordsURL string) (*Q
 // QueryAll runs soql and transparently pages through every "query more"
 // continuation, returning the combined records. Use this when you just want
 // every row and don't need to control pagination yourself.
-func (c *SfConnection) QueryAll(ctx context.Context, soql string, tooling bool) ([]json.RawMessage, error) {
+func (c *SfConnectionWithToken) QueryAll(ctx context.Context, soql string, tooling bool) ([]json.RawMessage, error) {
 	result, err := c.Query(ctx, soql, tooling)
 	if err != nil {
 		return nil, err
@@ -66,12 +66,12 @@ func (c *SfConnection) QueryAll(ctx context.Context, soql string, tooling bool) 
 	return all, nil
 }
 
-func (c *SfConnection) doQueryRequest(ctx context.Context, fullURL string) (*QueryResult, error) {
+func (c *SfConnectionWithToken) doQueryRequest(ctx context.Context, fullURL string) (*QueryResult, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fullURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("salesforce: building request: %w", err)
 	}
-	req.Header.Set("Authorization", "Bearer "+c.AccessToken)
+	req.Header.Set("Authorization", "Bearer "+c.Token)
 	req.Header.Set("Accept", "application/json")
 
 	resp, err := c.httpClient().Do(req)
