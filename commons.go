@@ -5,7 +5,8 @@ import "net/http"
 const DefaultAPIVersion = "67.0"
 
 type sfCommandResult[T any] struct {
-	Status int `json:"status"`
+	Code   string `json:"code"`
+	Status int    `json:"status"`
 	Result T
 }
 type SfError struct {

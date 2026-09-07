@@ -14,7 +14,7 @@ type sfAuthTokenCommandResult struct {
 func (con SfConnectionLight) GetConnectionWithAccessToken() (SfConnectionWithToken, error) {
 	cmd := exec.Command("sf", "org", "auth", "show-access-token", "--json", "--target-org", con.Username)
 
-	output, err := cmd.CombinedOutput()
+	output, err := cmd.Output()
 	if err != nil {
 		return SfConnectionWithToken{}, fmt.Errorf("command failed: %w, output: %s", err, string(output))
 	}
@@ -48,14 +48,14 @@ type sFOrgListResult struct {
 func ListOrgs() ([]SfConnectionLight, error) {
 	cmd := exec.Command("sf", "org", "list", "--json")
 
-	out, err := cmd.CombinedOutput()
+	output, err := cmd.Output()
 	if err != nil {
 		return nil, err
 	}
 
 	var response sfCommandResult[sFOrgListResult]
-	if err := json.Unmarshal(out, &response); err != nil {
-		return nil, fmt.Errorf("failed to parse sf org list output: %w\noutput: %s", err, string(out))
+	if err := json.Unmarshal(output, &response); err != nil {
+		return nil, fmt.Errorf("failed to parse sf org list output: %w\noutput: %s", err, string(output))
 	}
 
 	orgs := []SfConnectionLight{}
@@ -64,4 +64,22 @@ func ListOrgs() ([]SfConnectionLight, error) {
 	orgs = append(orgs, response.Result.ScratchOrgs...)
 	orgs = append(orgs, response.Result.Other...)
 	return orgs, nil
+}
+
+func GetDefaultConnection() (SfConnectionLight, error) {
+	cmd := exec.Command("sf", "org", "display", "--json")
+
+	output, _ := cmd.Output()
+
+	var response sfCommandResult[SfConnectionLight]
+	if err := json.Unmarshal(output, &response); err != nil {
+		return SfConnectionLight{}, fmt.Errorf("failed to parse sf org display output: %w\noutput: %s", err, string(output))
+	}
+	if response.Status != 0 {
+		if response.Code == "NoDefaultEnvError" {
+			return SfConnectionLight{}, fmt.Errorf("no default environment found")
+		}
+		return SfConnectionLight{}, fmt.Errorf("sf command returned non-zero status: %d\noutput: %s", response.Status, string(output))
+	}
+	return response.Result, nil
 }
