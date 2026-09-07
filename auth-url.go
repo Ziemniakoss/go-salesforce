@@ -36,7 +36,7 @@ func getSfAuthUrl(targetOrg string) (string, error) {
 		"--json",
 	)
 
-	out, err := cmd.CombinedOutput()
+	out, err := cmd.Output()
 	if err != nil {
 		// Even on failure, sfdx often still prints valid JSON with error details,
 		// so include the raw output in the error for debugging.
