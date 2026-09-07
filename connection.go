@@ -37,3 +37,31 @@ func (con SfConnectionLight) GetConnectionWithAccessToken() (SfConnectionWithTok
 		Token:       parsed.Result.AccessToken,
 	}, nil
 }
+
+type sFOrgListResult struct {
+	Other          []SfConnectionLight `json:"other"`
+	SandboxOrgs    []SfConnectionLight `json:"sandboxes"`
+	ScratchOrgs    []SfConnectionLight `json:"scratchOrgs"`
+	NonScratchOrgs []SfConnectionLight `json:"nonScratchOrgs"`
+}
+
+func ListOrgs() ([]SfConnectionLight, error) {
+	cmd := exec.Command("sf", "org", "list", "--json")
+
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, err
+	}
+
+	var response sfCommandResult[sFOrgListResult]
+	if err := json.Unmarshal(out, &response); err != nil {
+		return nil, fmt.Errorf("failed to parse sf org list output: %w\noutput: %s", err, string(out))
+	}
+
+	orgs := []SfConnectionLight{}
+	orgs = append(orgs, response.Result.NonScratchOrgs...)
+	orgs = append(orgs, response.Result.SandboxOrgs...)
+	orgs = append(orgs, response.Result.ScratchOrgs...)
+	orgs = append(orgs, response.Result.Other...)
+	return orgs, nil
+}
