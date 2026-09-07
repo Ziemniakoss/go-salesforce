@@ -63,11 +63,32 @@ func ListOrgs() ([]SfConnectionLight, error) {
 		return nil, fmt.Errorf("failed to parse sf org list output: %w\noutput: %s", err, string(output))
 	}
 
+	seen := make(map[string]bool)
 	orgs := []SfConnectionLight{}
-	orgs = append(orgs, response.Result.NonScratchOrgs...)
-	orgs = append(orgs, response.Result.SandboxOrgs...)
-	orgs = append(orgs, response.Result.ScratchOrgs...)
-	orgs = append(orgs, response.Result.Other...)
+	for _, o := range response.Result.NonScratchOrgs {
+		if !seen[o.Username] {
+			seen[o.Username] = true
+			orgs = append(orgs, o)
+		}
+	}
+	for _, o := range response.Result.SandboxOrgs {
+		if !seen[o.Username] {
+			seen[o.Username] = true
+			orgs = append(orgs, o)
+		}
+	}
+	for _, o := range response.Result.ScratchOrgs {
+		if !seen[o.Username] {
+			seen[o.Username] = true
+			orgs = append(orgs, o)
+		}
+	}
+	for _, o := range response.Result.Other {
+		if !seen[o.Username] {
+			seen[o.Username] = true
+			orgs = append(orgs, o)
+		}
+	}
 	return orgs, nil
 }
 
