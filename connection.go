@@ -51,7 +51,7 @@ type sFOrgListResult struct {
 }
 
 func ListOrgs() ([]SfConnectionLight, error) {
-	cmd := exec.Command("sf", "org", "list", "--json")
+	cmd := exec.Command("sf", "org", "list", "--json", "--skip-connection-status")
 
 	output, err := cmd.Output()
 	if err != nil {
